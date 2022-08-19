@@ -9,7 +9,7 @@
     
         <div id="todoList">
             <ol id="olist">
-                <li style="background-color: yellow;">
+                <li class="elemselected" style="background-color: yellow;">
                     <input type="checkbox">
                     <label>Задание 1</label>
                 </li>
@@ -21,12 +21,15 @@
         </div>
   
         <div id="buttonList">
-            <button onclick="render()">Изменить</button><br/>
+            <input id="inputTask" type="text" hidden>
+            <input id="inputColor" type="color" hidden>
+
+            <button onclick="editItem()">Изменить</button><br/>
             <button onclick="addItem()">Добавить</button><br/>
-            <button>Удалить</button><br/>
-            <button>🠕</button><br/>
-            <button>🠗</button><br/>
+            <button onclick="removeItem()">Удалить</button><br/>
+            <button onclick="upItem()">🠕</button><br/>
+            <button onclick="downItem()">🠗</button><br/>
         </div>
-        <input type="text" value="Test">
+        
 
 </body>
