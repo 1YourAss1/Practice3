@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="todo.css">
+    <title>Практика 3</title>
+</html>
+<body>
+    <script src="todo.js"></script>
+    
+        <div id="todoList">
+            <ol id="olist">
+                <li style="background-color: yellow;">
+                    <input type="checkbox">
+                    <label>Задание 1</label>
+                </li>
+                <li>
+                    <input type="checkbox" checked>
+                    <label>Задание 2</label>
+                </li>
+            </ol>
+        </div>
+  
+        <div id="buttonList">
+            <button onclick="render()">Изменить</button><br/>
+            <button onclick="addItem()">Добавить</button><br/>
+            <button>Удалить</button><br/>
+            <button>🠕</button><br/>
+            <button>🠗</button><br/>
+        </div>
+        <input type="text" value="Test">
+
+</body>
