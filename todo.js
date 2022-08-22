@@ -50,6 +50,12 @@ document.addEventListener("DOMContentLoaded", () => {
         saveJSON();
         replaceElement(task);
     });
+
+    document.getElementById('editButton').addEventListener('click', editTask);
+    document.getElementById('addButton').addEventListener('click', addTask);
+    document.getElementById('removeButton').addEventListener('click', removeTask);
+    document.getElementById('upButton').addEventListener('click', upTask);
+    document.getElementById('downButton').addEventListener('click', downTask);
     
     render();
 });
@@ -93,7 +99,7 @@ let saveJSON = function() {
     localStorage.setItem('todo', JSON.stringify(todo));
 }
 
-let editItem = function() {
+let editTask = function() {
     // Select task to edit
     if (selectedElement == null) {
         alert("Выберите элемент для редактирования");
@@ -108,7 +114,7 @@ let editItem = function() {
     inputColor.value = task.color;
 }
 
-let addItem = function() {
+let addTask = function() {
     let taskToAdd = {
         id: Date.now(),
         text: prompt("Введите новое задание"),
@@ -134,7 +140,7 @@ let addItem = function() {
     
 }
 
-let removeItem = function() {
+let removeTask = function() {
     if(selectedElement === null) return;
     todo.splice(todo.findIndex(task => task.id == selectedElement.id), 1);
     saveJSON();
@@ -143,7 +149,7 @@ let removeItem = function() {
     selectedElement = null;
 }
 
-let upItem = function() {
+let upTask = function() {
     if(selectedElement === null) return;
     // Get task and its index in array
     let task = todo.find(task => task.id == selectedElement.id);
@@ -161,7 +167,7 @@ let upItem = function() {
     saveJSON();
 }
 
-let downItem = function() {
+let downTask = function() {
     if(selectedElement === null) return;
     // Get task and its index in array
     let task = todo.find(task => task.id == selectedElement.id);
