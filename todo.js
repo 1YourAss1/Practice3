@@ -1,33 +1,56 @@
-"use strict"
+"use strict";
 
-let todo = [
-    {id: Date.now(), text: "Задание 1", done: true, color:"yellow"},
-    {id: Date.now()+1, text: "Задание 2", done: false},
-    {id: Date.now()+2, text: "Задание 3", done: false},
-    {id: Date.now()+3, text: "Задание 4", done: false},
-]
+let todo = []; 
 
 let selectedElement=null;
 
 let listTask;
+let inputTask;
+let inputColor;
 
 document.addEventListener("DOMContentLoaded", () => {
-    listTask = document.getElementById("olist");
+    todo = localStorage.getItem('todo');
+    todo = JSON.parse(todo);
 
-    listTask.addEventListener("click", event => {
+    listTask = document.getElementById("olist");
+    inputTask = document.getElementById("inputTask");
+    inputColor = document.getElementById("inputColor");
+
+    listTask.addEventListener('click', event => {
         let li = event.target.closest('li');
         if (!li) return;
-
-        if (selectedElement === li) {
-            li.classList.remove("elemselected");
-            selectedElement = null;
-        } else {
-            selectedElement?.classList.remove("elemselected");
-            selectedElement = li;
-            li.classList.add("elemselected");
-        }
+        // Add new selection by click
+        selectedElement?.classList.remove("elemselected");
+        li.classList.add("elemselected");
+        selectedElement = li;
+        // Hide edit input fields
+        inputTask.setAttribute("hidden", "");
+        inputColor.setAttribute("hidden", "");
     });
 
+    let replaceElement = function(task) {
+        let li = createLiElement(task);
+        li.classList.add("elemselected");
+        selectedElement.replaceWith(li);
+        selectedElement = li;
+    }
+
+    inputTask.addEventListener('change', function() {
+        // Edit element text
+        let task = todo.find(task => task.id == selectedElement.id);
+        task.text = this.value;
+        saveJSON();
+        replaceElement(task);
+    });
+
+    inputColor.addEventListener('change', function() {
+        // Edit element color
+        let task = todo.find(task => task.id == selectedElement.id);
+        task.color = this.value;
+        saveJSON();
+        replaceElement(task);
+    });
+    
     render();
 });
 
@@ -35,64 +58,87 @@ let render = function() {
     // Clear list
     listTask.replaceChildren();
     // Fill list
-    todo.forEach(task => {
-        listTask.append(createLiElement(task));
-    });
-    
+    if (todo) {
+        todo.forEach(task => {
+            let li = createLiElement(task);
+            listTask.append(li);
+        });
+    }
 }
 
+
 let createLiElement = function(task) {
-    let li = document.createElement("li");
-    li.setAttribute("id", `${task.id}`);
-    if ("color" in task) li.setAttribute("style", `background-color: ${task.color};`);
-    li.innerHTML = `<input type="checkbox" ${(task.done)? "checked" : ""}>
-                        <label for="${task.id}">${task.text}</label>`;
+    // Create outer li element
+    let li = document.createElement('li');
+    li.id = task.id;
+    if ('color' in task) li.style(`background-color: ${task.color};`);
+    // Create inner input checkbox
+    let inputCheckbox = document.createElement('input');
+    inputCheckbox.type = 'checkbox';
+    inputCheckbox.checked = task.done;
+    inputCheckbox.addEventListener('change', (event) => {
+        todo.find(task => task.id == selectedElement.id).done = event.target.checked;
+        saveJSON();
+    });
+    li.append(inputCheckbox);
+    // Create inner label
+    let label = document.createElement('label');
+    label.textContent = task.text;
+    li.append(label);
+
     return li;
 }
 
-let editItem = function() {
-    let inputTask = document.getElementById("inputTask");
-    let inputColor = document.getElementById("inputColor");
+let saveJSON = function() {
+    localStorage.setItem('todo', JSON.stringify(todo));
+}
 
+let editItem = function() {
+    // Select task to edit
+    if (selectedElement == null) {
+        alert("Выберите элемент для редактирования");
+        return;
+    }
+    // Show input fields
     inputTask.removeAttribute("hidden");
     inputColor.removeAttribute("hidden");
-
-    inputTask.addEventListener("change", function() {
-        console.log(this.value);
-    });
+    // Fill input fields with data to edit
+    let task = todo.find(task => task.id == selectedElement.id);
+    inputTask.value = task.text;
+    inputColor.value = task.color;
 }
 
 let addItem = function() {
-    let inputTask = document.getElementById("inputTask");
     let taskToAdd = {
         id: Date.now(),
-        text: inputTask.value,
+        text: prompt("Введите новое задание"),
         done: false,
     };
-
+    // Not empty task
     if(!taskToAdd.text) return;
-    
+    // Add new task
     let li = createLiElement(taskToAdd);
-    if (selectedElement != null) {
+    if (selectedElement) {
+        // Insert new task into todo array
         todo.splice(todo.findIndex(task => task.id == selectedElement.id)+1, 0, taskToAdd);
-
+        saveJSON();
+        // Move selection to new task
         li.classList.add("elemselected");
         selectedElement.after(li);
-
         selectedElement.classList.remove("elemselected");
         selectedElement = li;
-        
     } else {
         todo.unshift(taskToAdd);
         listTask.prepend(li);
     }
     
-    inputTask.value = '';
 }
 
 let removeItem = function() {
     if(selectedElement === null) return;
     todo.splice(todo.findIndex(task => task.id == selectedElement.id), 1);
+    saveJSON();
+    // Remove selection
     selectedElement.remove();
     selectedElement = null;
 }
@@ -112,6 +158,7 @@ let upItem = function() {
         todo.splice(indexTask-1, 0, task);
         selectedElement.after(selectedElement.previousSibling);
     }
+    saveJSON();
 }
 
 let downItem = function() {
@@ -129,4 +176,5 @@ let downItem = function() {
         todo.splice(indexTask+1, 0, task);
         selectedElement.before(selectedElement.nextSibling);
     }
+    saveJSON();
 }
