@@ -1,6 +1,6 @@
 "use strict";
 
-let todo = []; 
+let todo; 
 
 let selectedElement=null;
 
@@ -10,7 +10,7 @@ let inputColor;
 
 document.addEventListener("DOMContentLoaded", () => {
     todo = localStorage.getItem('todo');
-    todo = JSON.parse(todo);
+    todo = (todo) ? JSON.parse(todo) : [];  
 
     listTask = document.getElementById("olist");
     inputTask = document.getElementById("inputTask");
@@ -77,7 +77,7 @@ let createLiElement = function(task) {
     // Create outer li element
     let li = document.createElement('li');
     li.id = task.id;
-    if ('color' in task) li.style(`background-color: ${task.color};`);
+    if ('color' in task) li.style = `background-color: ${task.color};`;
     // Create inner input checkbox
     let inputCheckbox = document.createElement('input');
     inputCheckbox.type = 'checkbox';
@@ -127,7 +127,6 @@ let addTask = function() {
     if (selectedElement) {
         // Insert new task into todo array
         todo.splice(todo.findIndex(task => task.id == selectedElement.id)+1, 0, taskToAdd);
-        saveJSON();
         // Move selection to new task
         li.classList.add("elemselected");
         selectedElement.after(li);
@@ -137,7 +136,7 @@ let addTask = function() {
         todo.unshift(taskToAdd);
         listTask.prepend(li);
     }
-    
+    saveJSON();
 }
 
 let removeTask = function() {
