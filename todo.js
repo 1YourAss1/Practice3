@@ -10,7 +10,7 @@ let inputColor;
 
 document.addEventListener("DOMContentLoaded", () => {
     todo = localStorage.getItem('todo');
-    todo = (todo) ? JSON.parse(todo) : [];  
+    todo = JSON.parse(todo) ?? [];
 
     listTask = document.getElementById("olist");
     inputTask = document.getElementById("inputTask");
